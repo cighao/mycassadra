@@ -29,6 +29,7 @@ class BatchCommitLogService extends AbstractCommitLogService
     public BatchCommitLogService(CommitLog commitLog)
     {
         super(commitLog, "COMMIT-LOG-WRITER", POLL_TIME_MILLIS);
+        System.out.println("chen hhhhhhh\n");
     }
 
     protected void maybeWaitForSync(CommitLogSegment.Allocation alloc)
