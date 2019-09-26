@@ -188,6 +188,7 @@ public abstract class AbstractCommitLogService
                     lastSyncedAt = pollStarted;
                     syncComplete.signalAll();
                     syncCount++;
+                    
                 }
                 else
                 {
