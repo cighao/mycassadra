@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.util.concurrent.AtomicDouble; // ch add
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +58,9 @@ public abstract class AbstractCommitLogService
 
     final CommitLog commitLog;
     private final String name;
+
+    protected AtomicDouble wait_sync_time = new AtomicDouble(0); // ch add (in millisecond)
+    protected AtomicDouble sync_time = new AtomicDouble(0);      // ch add (in millisecond)
 
     /**
      * The duration between syncs to disk.
@@ -159,6 +163,8 @@ public abstract class AbstractCommitLogService
                 if (!sync())
                     break;
             }
+            System.out.println("wait sync time: " + wait_sync_time.get());   // ch add
+            System.out.println("sync time: " + sync_time.get());   // ch add
         }
 
         boolean sync()
@@ -175,7 +181,10 @@ public abstract class AbstractCommitLogService
                 {
                     // in this branch, we want to flush the commit log to disk
                     syncRequested = false;
+                    long start = System.nanoTime(); // ch add
                     commitLog.sync(true);
+                    long end = System.nanoTime(); // ch add
+                    sync_time.addAndGet((end-start)/1000000.0);// ch add
                     lastSyncedAt = pollStarted;
                     syncComplete.signalAll();
                     syncCount++;

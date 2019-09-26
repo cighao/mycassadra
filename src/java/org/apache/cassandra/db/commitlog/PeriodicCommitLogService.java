@@ -37,7 +37,10 @@ class PeriodicCommitLogService extends AbstractCommitLogService
         if (lastSyncedAt < expectedSyncTime)
         {
             pending.incrementAndGet();
+            long start = System.nanoTime();  // ch add
             awaitSyncAt(expectedSyncTime, commitLog.metrics.waitingOnCommit.time());
+            long end = System.nanoTime(); // ch add
+            wait_sync_time.addAndGet((end-start)/1000000.0);// ch add
             pending.decrementAndGet();
         }
     }
