@@ -61,6 +61,7 @@ public abstract class AbstractCommitLogService
 
     protected AtomicDouble wait_sync_time = new AtomicDouble(0); // ch add (in millisecond)
     protected AtomicDouble sync_time = new AtomicDouble(0);      // ch add (in millisecond)
+    protected AtomicLong num = new AtomicLong(0);
 
     /**
      * The duration between syncs to disk.
@@ -165,6 +166,7 @@ public abstract class AbstractCommitLogService
             }
             System.out.println("wait sync time: " + wait_sync_time.get());   // ch add
             System.out.println("sync time: " + sync_time.get());   // ch add
+            System.out.println("num: " + num.get());
         }
 
         boolean sync()
@@ -185,6 +187,7 @@ public abstract class AbstractCommitLogService
                     commitLog.sync(true);
                     long end = System.nanoTime(); // ch add
                     sync_time.addAndGet((end-start)/1000000.0);// ch add
+                    num.incrementAndGet();
                     lastSyncedAt = pollStarted;
                     syncComplete.signalAll();
                     syncCount++;

@@ -40,6 +40,7 @@ class BatchCommitLogService extends AbstractCommitLogService
         alloc.awaitDiskSync(commitLog.metrics.waitingOnCommit);
         long end = System.nanoTime(); // ch add
         wait_sync_time.addAndGet((end-start)/1000000.0);// ch add
+        System.out.println("time: "+(end-start)/1000000.0);
         pending.decrementAndGet();
     }
 }
