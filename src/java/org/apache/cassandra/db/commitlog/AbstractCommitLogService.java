@@ -187,7 +187,6 @@ public abstract class AbstractCommitLogService
                     commitLog.sync(true);
                     long end = System.nanoTime(); // ch add
                     sync_time.addAndGet((end-start)/1000000.0);// ch add
-                    num.incrementAndGet();
                     lastSyncedAt = pollStarted;
                     syncComplete.signalAll();
                     syncCount++;
