@@ -164,11 +164,9 @@ public abstract class AbstractCommitLogService
                 if (!sync())
                     break;
             }
-            
             System.out.println("wait sync time: " + wait_sync_time.get());   // ch add
             System.out.println("sync time: " + sync_time.get());   // ch add
             System.out.println("num: " + num.get());
-
         }
 
         boolean sync()
