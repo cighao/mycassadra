@@ -61,7 +61,7 @@ public abstract class AbstractCommitLogService
 
     protected AtomicDouble wait_sync_time = new AtomicDouble(0); // ch add (in millisecond)
     protected AtomicDouble sync_time = new AtomicDouble(0);      // ch add (in millisecond)
-    protected AtomicLong num = new AtomicLong(0);
+    protected AtomicLong num = new AtomicLong(0);  // ch add
 
     /**
      * The duration between syncs to disk.

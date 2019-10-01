@@ -21,6 +21,8 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.zip.CRC32;
+import java.util.concurrent.atomic.AtomicLong;
+import com.google.common.util.concurrent.AtomicDouble;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
@@ -74,6 +76,9 @@ public class CommitLog implements CommitLogMBean
     final AbstractCommitLogService executor;
 
     volatile Configuration configuration;
+
+    private AtomicDouble add_time = new AtomicDouble(0);// ch add
+    private AtomicLong num = new AtomicLong(0);// ch add
 
     private static CommitLog construct()
     {
@@ -245,6 +250,7 @@ public class CommitLog implements CommitLogMBean
     {
         assert mutation != null;
 
+        Long start = System.nanoTime(); // ch add
         try (DataOutputBuffer dob = DataOutputBuffer.scratchBuffer.get())
         {
             Mutation.serializer.serialize(mutation, dob, MessagingService.current_version);
@@ -284,6 +290,9 @@ public class CommitLog implements CommitLogMBean
             }
 
             executor.finishWriteFor(alloc);
+            Long end = System.nanoTime(); // ch add
+            add_time.getAndAdd((end-start)/1000000.0);// ch add
+            num.incrementAndGet();// ch add
             return alloc.getCommitLogPosition();
         }
         catch (IOException e)
