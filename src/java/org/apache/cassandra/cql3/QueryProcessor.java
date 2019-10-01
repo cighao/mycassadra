@@ -83,6 +83,8 @@ public class QueryProcessor implements QueryHandler
 
     protected AtomicDouble process_time = new AtomicDouble(0);  // ch add
     protected AtomicLong process_num = new AtomicLong(0); // ch add
+    protected AtomicLong processPrepared_num = new AtomicLong(0); // ch add
+    protected AtomicDouble processPrepared_time = new AtomicDouble(0); // ch add
 
     static
     {
@@ -475,7 +477,13 @@ public class QueryProcessor implements QueryHandler
                                          long queryStartNanoTime)
                                                  throws RequestExecutionException, RequestValidationException
     {
-        return processPrepared(statement, state, options, queryStartNanoTime);
+        // ch add
+        Long start = System.nanoTime();
+        ResultMessage rm = processPrepared(statement, state, options, queryStartNanoTime);;
+        Long end = System.nanoTime();
+        processPrepared_time.getAndAdd((end-start)/1000000.0);
+        processPrepared_num.incrementAndGet();
+        return rm;
     }
 
     public ResultMessage processPrepared(CQLStatement statement, QueryState queryState, QueryOptions options, long queryStartNanoTime)
@@ -741,7 +749,9 @@ public class QueryProcessor implements QueryHandler
     }
     // ch add
     public void print_statistics(){
-        System.out.println("process time: " + process_time.get());
         System.out.println("process num: " + process_num.get());
+        System.out.println("process time: " + process_time.get());
+        System.out.println("processPrepared num: " + processPrepared_num.get());
+        System.out.println("processPrepared time: " + processPrepared_time.get());
     }
 }
