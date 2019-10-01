@@ -122,6 +122,8 @@ public class StorageProxy implements StorageProxyMBean
 
     private static AtomicDouble mutate_time = new AtomicDouble(0); // ch add
     private static AtomicLong mutate_num = new AtomicLong(0);  // ch add
+    private static AtomicDouble perform_time = new AtomicDouble(0); // ch add
+    private static AtomicLong perform_num = new AtomicLong(0);  // ch add
 
     private StorageProxy()
     {
@@ -1258,8 +1260,12 @@ public class StorageProxy implements StorageProxyMBean
 
         if (insertLocal)
         {
+            Long start = System.nanoTime();  // ch add
             Preconditions.checkNotNull(localReplica);
             performLocally(stage, localReplica, mutation::apply, responseHandler);
+            Long end = System.nanoTime();  // ch add
+            perform_time.getAndAdd((end - start)/1000000.0);
+            perform_num.incrementAndGet();
         }
 
         if (localDc != null)
@@ -2815,5 +2821,7 @@ public class StorageProxy implements StorageProxyMBean
     public void print_statistics(){
         System.out.println("mutate num: " + mutate_num.get());
         System.out.println("mutate time: " + mutate_time.get());
+        System.out.println("perform num: " + perform_num.get());
+        System.out.println("perform time: " + perform_time.get());
     }
 }
