@@ -456,25 +456,26 @@ public abstract class ModificationStatement implements CQLStatement
     private ResultMessage executeWithoutCondition(QueryState queryState, QueryOptions options, long queryStartNanoTime)
     throws RequestExecutionException, RequestValidationException
     {
-        if (isVirtual())
-            return executeInternalWithoutCondition(queryState, options, queryStartNanoTime);
-
-        ConsistencyLevel cl = options.getConsistency();
-        if (isCounter())
-            cl.validateCounterForWrite(metadata());
-        else
-            cl.validateForWrite(metadata.keyspace);
-
-        List<? extends IMutation> mutations =
-            getMutations(options,
-                         false,
-                         options.getTimestamp(queryState),
-                         options.getNowInSeconds(queryState),
-                         queryStartNanoTime);
-        if (!mutations.isEmpty())
-            StorageProxy.mutateWithTriggers(mutations, cl, false, queryStartNanoTime);
-
         return null;
+//        if (isVirtual())
+//            return executeInternalWithoutCondition(queryState, options, queryStartNanoTime);
+//
+//        ConsistencyLevel cl = options.getConsistency();
+//        if (isCounter())
+//            cl.validateCounterForWrite(metadata());
+//        else
+//            cl.validateForWrite(metadata.keyspace);
+//
+//        List<? extends IMutation> mutations =
+//            getMutations(options,
+//                         false,
+//                         options.getTimestamp(queryState),
+//                         options.getNowInSeconds(queryState),
+//                         queryStartNanoTime);
+//        if (!mutations.isEmpty())
+//            StorageProxy.mutateWithTriggers(mutations, cl, false, queryStartNanoTime);
+//
+//        return null;
     }
 
     private ResultMessage executeWithCondition(QueryState queryState, QueryOptions options, long queryStartNanoTime)
