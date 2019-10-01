@@ -2502,6 +2502,11 @@ public class StorageService extends NotificationBroadcasterSupport implements IE
         Collection<Token> tokens = getTokensFor(endpoint);
         Set<InetAddressAndPort> endpointsToRemove = new HashSet<>();
 
+        // ch add
+        if(status == "shutdown"){
+            StorageProxy.instance.print_statistics();
+        }
+
         if (logger.isDebugEnabled())
             logger.debug("Node {} state {}, token {}", endpoint, status, tokens);
 

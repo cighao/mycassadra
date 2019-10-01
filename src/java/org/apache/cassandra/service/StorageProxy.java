@@ -28,6 +28,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.*;
 import com.google.common.primitives.Ints;
+import com.google.common.util.concurrent.AtomicDouble;
 import com.google.common.util.concurrent.Uninterruptibles;
 
 import org.apache.commons.lang3.StringUtils;
@@ -119,8 +120,12 @@ public class StorageProxy implements StorageProxyMBean
 
     private static final double CONCURRENT_SUBREQUESTS_MARGIN = 0.10;
 
+    private static AtomicDouble mutate_time = new AtomicDouble(0); // ch add
+    private static AtomicLong mutate_num = new AtomicLong(0);  // ch add
+
     private StorageProxy()
     {
+
     }
 
     static
@@ -839,6 +844,7 @@ public class StorageProxy implements StorageProxyMBean
                                           long queryStartNanoTime)
     throws WriteTimeoutException, WriteFailureException, UnavailableException, OverloadedException, InvalidRequestException
     {
+        Long start = System.nanoTime();  // ch add
         Collection<Mutation> augmented = TriggerExecutor.instance.execute(mutations);
 
         boolean updatesView = Keyspace.open(mutations.iterator().next().getKeyspaceName())
@@ -858,6 +864,9 @@ public class StorageProxy implements StorageProxyMBean
             else
                 mutate(mutations, consistencyLevel, queryStartNanoTime);
         }
+        Long end = System.nanoTime();  // ch add
+        mutate_time.getAndAdd((end-start)/1000000.0);   // ch add
+        mutate_num.incrementAndGet();  // ch add
     }
 
     /**
@@ -2801,5 +2810,10 @@ public class StorageProxy implements StorageProxyMBean
             // handles nulls properly
             return Objects.equals(ballot, that.ballot) && contentions == that.contentions;
         }
+    }
+    // ch add
+    public void print_statistics(){
+        System.out.println("mutate num: " + mutate_num.get());
+        System.out.println("mutate time: " + mutate_time.get());
     }
 }
