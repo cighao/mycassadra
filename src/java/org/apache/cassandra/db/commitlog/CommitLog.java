@@ -419,6 +419,8 @@ public class CommitLog implements CommitLogMBean
         executor.awaitTermination();
         segmentManager.shutdown();
         segmentManager.awaitTermination();
+        System.out.println("add num: " + num.get());  // ch add
+        System.out.println("add time: " + add_time.get()); // ch add
     }
 
     /**
