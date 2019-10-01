@@ -2505,6 +2505,7 @@ public class StorageService extends NotificationBroadcasterSupport implements IE
         // ch add
         if(status == "shutdown"){
             StorageProxy.instance.print_statistics();
+            QueryProcessor.instance.print_statistics();
         }
 
         if (logger.isDebugEnabled())

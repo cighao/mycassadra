@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -30,6 +31,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Predicate;
 import com.google.common.collect.*;
 import com.google.common.primitives.Ints;
+import com.google.common.util.concurrent.AtomicDouble;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +80,9 @@ public class QueryProcessor implements QueryHandler
     public static final CQLMetrics metrics = new CQLMetrics();
 
     private static final AtomicInteger lastMinuteEvictionsCount = new AtomicInteger(0);
+
+    protected AtomicDouble process_time = new AtomicDouble(0);  // ch add
+    protected AtomicLong process_num = new AtomicLong(0); // ch add
 
     static
     {
@@ -230,7 +235,13 @@ public class QueryProcessor implements QueryHandler
                                  Map<String, ByteBuffer> customPayload,
                                  long queryStartNanoTime) throws RequestExecutionException, RequestValidationException
     {
-        return process(query, state, options, queryStartNanoTime);
+        // ch add
+        Long start = System.nanoTime();
+        ResultMessage rm = process(query, state, options, queryStartNanoTime);
+        Long end = System.nanoTime();
+        process_time.getAndAdd((end-start)/1000000.0);
+        process_num.incrementAndGet();
+        return rm;
     }
 
     public ResultMessage process(String queryString, QueryState queryState, QueryOptions options, long queryStartNanoTime)
@@ -727,5 +738,10 @@ public class QueryProcessor implements QueryHandler
         {
             removeInvalidPreparedStatementsForFunction(ksName, aggregateName);
         }
+    }
+    // ch add
+    public void print_statistics(){
+        System.out.println("process time: " + process_time.get());
+        System.out.println("process num: " + process_num.get());
     }
 }
