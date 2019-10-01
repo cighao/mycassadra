@@ -481,7 +481,7 @@ public class QueryProcessor implements QueryHandler
         Long start = System.nanoTime();
         ResultMessage rm = processPrepared(statement, state, options, queryStartNanoTime);;
         Long end = System.nanoTime();
-        processPrepared_time.getAndAdd((end-start)/1000000.0);
+        processPrepared_time.getAndAdd((end-queryStartNanoTime)/1000000.0);
         processPrepared_num.incrementAndGet();
         return rm;
     }
