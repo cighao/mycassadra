@@ -624,6 +624,7 @@ public abstract class Message
         @Override
         public void channelRead0(ChannelHandlerContext ctx, Request request)
         {
+            System.out.println(request.toString());
             // if we decide to handle this message, process it outside of the netty event loop
             if (shouldHandleRequest(ctx, request))
                 requestExecutor.submit(() -> processRequest(ctx, request));
